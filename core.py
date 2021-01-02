@@ -8,34 +8,49 @@ P_BLUE = 0.16
 P_PURPLE = 0.08
 P_RED = 0.04
 
-num_scraps = 1000
-num_betted = 500
-
 options = ["y", "g", "b", "p", "r"]
+
+num_spins = 100
+successes = 0
+
+
 
 scrap_allocation = np.array([0.67, 0.33, 0, 0 ,0])
 
-bet = num_scraps * scrap_allocation
+best_rate = 0
+best_allocation = None
 
-print (bet)
+for y in np.arange(0, 1, 0.1):
+    for g in np.arange(0, 1-y, 0.1):
+        for b in np.arange(0, 1-(y+g), 0.1):
+            for p in np.arange(0, 1-(y+g+b), 0.1):
+                for r in np.arange(0, 1-(y+g+b+p), 0.1):
+                    scrap_allocation = np.array([y, g, b, p, r])
+                    successes = 0
+                    for spin in range(num_spins):
+                        num_betted = 100
+                        bet = num_betted * scrap_allocation
 
-num_spins = 10
+                        revenue = 0
+                        selection = np.random.choice(options, size=1, p=np.array([P_YELLOW, P_GREEN, P_BLUE, P_PURPLE, P_RED]))[0]
+                        if selection == "y":
+                            revenue += (bet[0] * 2)
+                        elif selection == "g":
+                            revenue += (bet[1] * 4)
+                        elif selection == "b":
+                            revenue += (bet[2] * 6)
+                        elif selection == "p":
+                            revenue += (bet[3] * 12)
+                        elif selection == "r":
+                            revenue += (bet[4] * 25)
+                        if revenue > num_betted:
+                            successes += 1
 
-for spin in range(num_spins):
-    num_betted = num_scraps // 2
-    bet = num_betted * scrap_allocation
-    num_scraps = num_scraps - num_betted
+                    success_rate = successes / num_spins
+                    if success_rate > best_rate:
+                        best_allocation = scrap_allocation
+                        best_rate = success_rate
 
-    selection = np.random.choice(options, size=1, p=np.array([P_YELLOW, P_GREEN, P_BLUE, P_PURPLE, P_RED]))[0]
-    if selection == "y":
-        num_scraps += bet[0]
-    elif selection == "g":
-        num_scraps += bet[1]
-    elif selection == "b":
-        num_scraps += bet[2]
-    elif selection == "p":
-        num_scraps += bet[3]
-    elif selection == "r":
-        num_scraps += bet[4]
-    print (num_scraps)
+print (best_allocation)
+print (best_rate)
 
