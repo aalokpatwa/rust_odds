@@ -13,7 +13,7 @@ P_RED = 0.04
 
 options = ["y", "g", "b", "p", "r"]
 
-num_spins = 1000
+num_spins = 2000
 successes = 0
 
 
