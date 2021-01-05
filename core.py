@@ -4,7 +4,6 @@ import time
 
 beginning = time.perf_counter()
 
-
 P_YELLOW = 0.48
 P_GREEN = 0.24
 P_BLUE = 0.16
@@ -14,13 +13,10 @@ P_RED = 0.04
 options = ["y", "g", "b", "p", "r"]
 
 num_spins = 2000
-successes = 0
-
-
 
 scrap_allocation = np.array([0.67, 0.33, 0, 0 ,0])
 
-best_rate = 0
+best_revenue = 0
 best_allocation = None
 
 for y in np.arange(0, 1, 0.05):
@@ -30,31 +26,28 @@ for y in np.arange(0, 1, 0.05):
                 r = 1-(y+g+b+p)
                 scrap_allocation = np.array([y, g, b, p, r])
                 successes = 0
+                revenues = []
                 for spin in range(num_spins):
                     num_betted = 100
                     bet = num_betted * scrap_allocation
-
-                    revenue = 0
                     selection = np.random.choice(options, size=1, p=np.array([P_YELLOW, P_GREEN, P_BLUE, P_PURPLE, P_RED]))[0]
                     if selection == "y":
-                        revenue += (bet[0] * 2)
+                        revenues.append(bet[0] * 2)
                     elif selection == "g":
-                        revenue += (bet[1] * 4)
+                        revenues.append(bet[1] * 4)
                     elif selection == "b":
-                        revenue += (bet[2] * 6)
+                        revenues.append(bet[2] * 6)
                     elif selection == "p":
-                        revenue += (bet[3] * 12)
+                        revenues.append(bet[3] * 12)
                     elif selection == "r":
-                        revenue += (bet[4] * 25)
-                    if revenue > num_betted:
-                        successes += 1
-                success_rate = successes / num_spins
-                if success_rate > best_rate:
+                        revenues.append(bet[4] * 25)
+                average_revenue = np.mean(np.array(revenues))
+                if average_revenue > best_revenue:
                     best_allocation = scrap_allocation
-                    best_rate = success_rate
+                    best_revenue = average_revenue
+
 end = time.perf_counter()
 
-print (end-beginning)
-print (best_allocation)
-print (best_rate)
-
+print ("Time taken: " + str(round(end-beginning, 3)))
+print ("Optimal allocation: " + str(best_allocation))
+print ("Optimal average revenue: " + str(round(average_revenue,3)))
